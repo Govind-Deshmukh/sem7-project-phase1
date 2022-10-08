@@ -13,24 +13,30 @@ app.secret_key = 'iamfuckingcreazy'
 CORS(app)
 # this is configuration for sql database connection 
 
+# try:
+#     conn = sqlite3.connect("database.db")
+#     cursor = conn.cursor()
+#     print('SQLite database started')
+#     cursor.execute('select sqlite_version();')
+#     print('SQLite Version is {}'.format(cursor.fetchall()))
+# except sqlite3.Error as e:
+#     print(e)
+
+
 try:
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
-    print('SQLite database started')
-    cursor.execute('select sqlite_version();')
-    print('SQLite Version is {}'.format(cursor.fetchall()))
-except sqlite3.Error as e:
+    mydb = mysql.connector.connect(
+	host = "localhost", # your host address (yourservice.com)
+	user = "root", # your yasername for sql database
+	password = "", # your password 
+    database = "sem7_project" # your database name
+    )
+
+    cursor = mydb.cursor()
+    print("connected to db")
+except Exception as e:
     print(e)
 
 
-# mydb = mysql.connector.connect(
-# 	host = "localhost", # your host address (yourservice.com)
-# 	user = "root", # your yasername for sql database
-# 	password = "", # your password 
-#     database = "codechef" # your database name
-# )
-
-# cursor = mydb.cursor()
 
 @app.route('/check',methods = ['POST'])
 def check():
@@ -101,7 +107,7 @@ def register():
                 contact = request.form['contact']
                 username = request.form['username']
                 password = request.form['password']
-                cursor.execute("INSERT INTO users (name,email,contact,username,password) VALUES (%s,%s,%s,%s,%s)",(name,email,contact,username,password))
+                cursor.execute("INSERT INTO users (name,email,number,username,password) VALUES (%s,%s,%s,%s,%s)",(name,email,contact,username,password))
                 mydb.commit()
                 return make_response(jsonify({'message' : 'You are now registered and can log in'}))
 

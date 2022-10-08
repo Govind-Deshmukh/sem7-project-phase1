@@ -31,6 +31,7 @@ export default function RegisterCard() {
     console.log(artical);
 
     if (confpassword === password) {
+      console.log("check")
       try {
         await axios.post(url, artical).then((res) => {
           console.log(res.data.message);
@@ -39,12 +40,14 @@ export default function RegisterCard() {
         });
       } catch (error) {
         swal(
-          "Login Failed",
+          "Registeration Failed",
           "Username or Password enterred is Invalid",
           "error"
         );
+        console.log(error)
       }
-    } else {
+    } 
+    else {
       swal(
         "Registeration Failed",
         "Password and COnfirm password do not match",
