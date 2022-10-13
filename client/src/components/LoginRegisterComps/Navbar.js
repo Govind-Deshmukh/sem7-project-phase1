@@ -1,37 +1,49 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-// import { color } from '@mui/system';
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import "./style.css";
 export default function Navbar() {
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            MGM Email Marketing
-          </Typography>
+    <nav class="navbar navbar-expand-lg">
+      <a class="navbar-brand" href="#">
+        MGM Email Marketing App
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-          <Button className="signupbtn" color="inherit">
-            Log in
-          </Button>
-        </Toolbar>
-      </AppBar>
-    </Box>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">
+              Home
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              Link
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              Disabled
+            </a>
+          </li>
+        </ul>
+        <div class="my-2 my-lg-0">
+          <button class="btn btn-warning my-2 my-sm-0" type="submit">
+            Something
+          </button>
+        </div>
+      </div>
+    </nav>
   );
 }

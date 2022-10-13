@@ -1,0 +1,12 @@
+.navbar {
+  background-color: #c9e7fd;
+  color: #333333;
+  font-size: 1.3em;
+  font-weight: 650;
+  padding: 0.5em;
+  text-align: center;
+}
+
+.nav-item {
+  margin: 0em 0.5em 0em 0.5em;
+}

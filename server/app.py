@@ -1,122 +1,88 @@
 #flask app template 
+from crypt import methods
+from lib2to3.pgen2 import token
 from flask import Flask,request,session,jsonify,make_response
 import json
-import mysql.connector
+from grpc import Status
 import jwt
 from datetime import datetime, timedelta
 from flask_cors import CORS
 
-import sqlite3
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+
+datakeys = credentials.Certificate('../firebase/serviceAccountKey.json')
+
+firebase_admin.initialize_app(datakeys, {
+    'databaseURL': 'https://sem7-project-default-rtdb.firebaseio.com'
+})
+
+ref = db.reference()
+
 
 app = Flask(__name__)
-app.secret_key = 'iamfuckingcreazy'
+app.secret_key = 'iamgoodboi'
 CORS(app)
-# this is configuration for sql database connection 
-
-# try:
-#     conn = sqlite3.connect("database.db")
-#     cursor = conn.cursor()
-#     print('SQLite database started')
-#     cursor.execute('select sqlite_version();')
-#     print('SQLite Version is {}'.format(cursor.fetchall()))
-# except sqlite3.Error as e:
-#     print(e)
-
-
-try:
-    mydb = mysql.connector.connect(
-	host = "localhost", # your host address (yourservice.com)
-	user = "root", # your yasername for sql database
-	password = "", # your password 
-    database = "sem7_project" # your database name
-    )
-
-    cursor = mydb.cursor()
-    print("connected to db")
-except Exception as e:
-    print(e)
 
 
 
-@app.route('/check',methods = ['POST'])
-def check():
-    if request.method == 'POST':
-        # get data from front end session stroage
-        dump = request.get_json()
-        # get token from session 
-        token = dump['token']
-        # decode token and find username from it
-        new = jwt.decode(token, app.config['SECRET_KEY'])
-        # username = username encoded in jwt token 
-        username =  new['public_id']
-        # get username from database 
-        cursor.execute("SELECT username FROM users WHERE username = '"+username+"';")
-        data = cursor.fetchall()
-        # got list of tuple from sql db
-        data = data[0]
-        # create var database user to verify further
-        dbusername = data[0]
-        # check if user from database and local storage are matching
-        if (dbusername != username):
-            return make_response(jsonify({'status' : 'Flase'}))
+
+@app.route('/auth/verify',methods=['POST','GET'])
+def verify():
+    dump = request.get_json()
+    token = dump['token']
+    token = jwt.decode(token, "iamgoodboi", algorithms=["HS256"])
+    try:
+        if(token['public_id']==ref.child(token['public_id']).get() and token['exp'] > datetime.now().timestamp()):
+            return jsonify({"status":True})
         else:
-            return make_response(jsonify({'status' : 'True'}))
+            return jsonify({"status":False})
+    except Exception as e:
+        return jsonify({"status":False,'error':str(e)})
 
-# login api route 
-@app.route('/login' , methods=['POST'])
+
+# # login api route
+@app.route('/login',methods = ['POST'])
 def login():
     if request.method == 'POST':
         dump = request.get_json()
-        username = dump['username']
-        password =  dump['password']
-        cursor.execute("SELECT * FROM users WHERE username = '"+username+"' AND password = '"+password+"';")
-        data = cursor.fetchall()
-        if (len(data)==0 or len(data)>1):
-            resp = jsonify({'message' : 'Invalid username or password'})
-            resp.status_code = 400
-            return resp
-        else:
-            # added username in session
-            session['username'] = username
-            # return jwt token 
-            token = jwt.encode({'public_id': username,'exp' : datetime.utcnow() + timedelta(hours= 12)}, app.config['SECRET_KEY'])
-            
-            return make_response(jsonify({'token' : token.decode('UTF-8'),'username' : username }), 201)
+        try:
+            data = ref.child(dump['username']).get()
+            if (data == None):
+                return make_response(jsonify({'status' : 'False'}))
+            else:
+                if (data['password'] == dump['password'] and data['username'] == dump['username']):
+                    token = jwt.encode({'public_id': dump['username'], 'exp' : datetime.utcnow() + timedelta(hours=10)}, app.config['SECRET_KEY'])
+                    return make_response(jsonify({'status' : 'True','token' : token,'username':dump['username'] }))
+                else:
+                    return make_response(jsonify({'emoji':'error','message' : 'Failed logged in','heading' : 'Error'}))
+        except Exception as e:
+            return jsonify({'emoji':'error','message': str(e),'ststus':False,'heading' : 'Error','error':str(e)})
+
 
 #  register api route 
 @app.route('/register' , methods=['POST'])
 def register():
     if request.method == 'POST':
-        #check confirm passowrd and password
-        if request.form['password'] != request.form['confpassword']:
-            resp = jsonify({'message':'Password and Confirm Password does not match'})
-            resp.status_code = 401
-            return make_response(resp)
-        #check if username already exists
-        else:
-            username = request.form['username']
-            cursor.execute("SELECT * FROM users WHERE username = %s", [username])
-            user = cursor.fetchone()
-            if user:
-                resp = jsonify({'message':'User already exists'})
-                resp.status_code = 401
-                return make_response(resp)
+        dump = request.get_json()
+        try:
+            if ref.child(dump['username']).get() is not None:
+                return make_response(jsonify({'emoji':'warning','message' : 'User already exists','heading' : 'Warning'}))
             else:
-                name = request.form['name']
-                email = request.form['email']
-                contact = request.form['contact']
-                username = request.form['username']
-                password = request.form['password']
-                cursor.execute("INSERT INTO users (name,email,number,username,password) VALUES (%s,%s,%s,%s,%s)",(name,email,contact,username,password))
-                mydb.commit()
-                return make_response(jsonify({'message' : 'You are now registered and can log in'}))
+                ref.child(dump['username']).set({
+                    'name': dump['name'],
+                    'email': dump['email'],
+                    'contact': dump['contact'],
+                    'username': dump['username'],
+                    'password': dump['password'],
+                })
+                return make_response(jsonify({'emoji':'success','message' : 'User registered successfully','heading' : 'Success'}))
+        except Exception as e:
+            return jsonify({'emoji':'error','message': str(e),'ststus':False,'heading' : 'Error','error':str(e)})
 
 
-# logout route
-@app.route('/logout', methods=['GET','POST'])
-def logout():
-    session.clear()
-    return make_response(jsonify({'message' : 'You successfully logged out'}))
+    
 
 
 # main app running function 

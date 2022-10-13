@@ -30,29 +30,22 @@ export default function RegisterCard() {
     };
     console.log(artical);
 
-    if (confpassword === password) {
-      console.log("check")
+    if (password === confpassword) {
       try {
-        await axios.post(url, artical).then((res) => {
-          console.log(res.data.message);
-
-          window.location.href = "/";
-        });
-      } catch (error) {
+        const res = await axios.post(url, artical);
+        console.log(res);
+        // swal("You are registered!", "success");
         swal(
-          "Registeration Failed",
-          "Username or Password enterred is Invalid",
-          "error"
+          res["data"]["heading"],
+          res["data"]["message"],
+          res["data"]["emoji"]
         );
-        console.log(error)
+      } catch (error) {
+        console.log(error);
+        swal("Error!", "Something went wrong!", "error");
       }
-    } 
-    else {
-      swal(
-        "Registeration Failed",
-        "Password and COnfirm password do not match",
-        "error"
-      );
+    } else {
+      swal("Error!", "Password and Confirm Password are not same!", "error");
     }
   };
 
