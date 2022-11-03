@@ -1,12 +1,8 @@
-from crypt import methods
-from lib2to3.pgen2 import token
-from webbrowser import get
 import bcrypt
 from flask import Flask, render_template, request, redirect, url_for,flash
 from datetime import datetime, timedelta
 from flask_cors import CORS
 import jwt
-from requests import session
 from flask_bcrypt import Bcrypt
 
 # data base configuration 
