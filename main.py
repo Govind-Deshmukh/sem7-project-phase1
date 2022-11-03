@@ -1,5 +1,5 @@
 import bcrypt
-from flask import Flask, render_template, request, redirect, url_for,flash
+from flask import Flask, render_template, request, redirect, url_for,flash, session
 from datetime import datetime, timedelta
 from flask_cors import CORS
 import jwt
@@ -27,17 +27,22 @@ bcrypt = Bcrypt(app)
 def index():
     return render_template("loginregister/login.html")
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST','GET'])
 def login():
+    if request.method == 'GET':
+        return render_template("loginregister/login.html")
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        str1 = ref.child(username).get()['password']
+        str1 = str1[2:-1]
         try:
-            if bcrypt.check_password_hash(ref.child(username).get()['password'], password):
+            if bcrypt.check_password_hash(str1, password):
                 session['username'] = username
                 session['name'] = ref.child(username).get()['name']
                 session['logged_in'] = True
                 token = jwt.encode({'username': username, 'exp': datetime.utcnow() + timedelta(minutes=30)}, app.secret_key)
+                print(token)
                 session['token'] = token
                 print(token)
                 return redirect(url_for('dashboard'))
@@ -78,13 +83,48 @@ def register():
 
 @app.route('/dashboard', methods=['POST','GET'])
 def dashboard():
-    if session['logged_in'] == True:
-        if 'username' in session:
-            username = session['username']
-            return render_template("dashboard.html", username=username)
-        return render_template("dashboard.html")
-    else:
-        return redirect(url_for('index'))
+    if request.method == 'GET':
+        try:
+            if session['logged_in'] == True:
+                if 'username' in session:
+                    data = {
+                        'username': session['username'],
+                    }
+                    return render_template("dashboard/dashboard.html", data = data)
+                else:
+                    return redirect(url_for('index'))
+        except Exception as e:
+            return redirect(url_for('index'))
+
+@app.route('/dashboard/configuration', methods=['POST','GET'])
+def configureation():
+    if request.method == 'GET':
+        try:
+            if session['logged_in'] == True:
+                if 'username' in session:
+                    data = {
+                        'user':ref.child(session['username']).get(),
+                        'username': session['username'],
+                    }
+                    return render_template("dashboard/configuration.html", data = data)
+                else:
+                    return redirect(url_for('index'))
+        except Exception as e:
+            return redirect(url_for('index'))
+    if request.method == 'POST':
+        try:
+            if session['logged_in'] == True:
+                if 'username' in session:
+                    pass
+                else:
+                    return redirect(url_for('index'))
+        except Exception as e:
+            return redirect(url_for('index'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)
