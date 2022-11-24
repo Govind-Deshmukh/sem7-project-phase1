@@ -25,10 +25,11 @@ export default function Login() {
       if (data.error) {
         swal("Error", "Please enter valid data", "error");
       } else {
-        swal("Success", "Login successfully", "success");
-        // set local storege
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("data", JSON.stringify(data));
+        swal(data.code, data.message, data.code.toLowerCase()).then(() => {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("data", JSON.stringify(data));
+          window.location.href = "/dashboard";
+        });
       }
     } catch (error) {
       swal("Error", "Please enter valid data", "error");

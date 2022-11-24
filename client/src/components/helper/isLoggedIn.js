@@ -1,9 +1,17 @@
 // function to check session for logged in user
+import jwt_decode from "jwt-decode";
 const isLoggedIn = () => {
-  if (sessionStorage.getItem("token")) {
-    return true;
+  try {
+    const token = localStorage.getItem("token");
+    const decoded = jwt_decode(token);
+    if (decoded) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch {
+    return false;
   }
-  return false;
 };
 
 export default isLoggedIn;

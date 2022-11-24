@@ -20,22 +20,23 @@ export default function Register() {
           email: email,
           password: password,
         };
-
+        console.log(artical);
         const response = await fetch("http://localhost:5000/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
           },
           body: JSON.stringify(artical),
         });
         const data = await response.json();
         if (data.error) {
+          console.log(data.error);
           swal("Error", "Please enter valid data", "error");
         } else {
-          swal("Success", "Register successfully", "success");
-          //   set local storege
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("data", JSON.stringify(data));
+          swal(data.code, data.message, data.code.toLowerCase()).then(() => {
+            window.location.href = "/";
+          });
         }
       } catch (error) {
         swal("Error", "Please enter valid data", "error");
