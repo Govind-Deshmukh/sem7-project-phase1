@@ -43,8 +43,6 @@ def login():
                 session['logged_in'] = True
                 token = jwt.encode({'username': username, 'exp': datetime.utcnow() + timedelta(minutes=30)}, app.secret_key)
                 print(token)
-                session['token'] = token
-                print(token)
                 return redirect(url_for('dashboard'))
             else:
                 return redirect(url_for('index'))
