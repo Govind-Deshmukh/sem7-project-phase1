@@ -15,6 +15,7 @@ firebase_admin.initialize_app(cred, {
 ref = db.reference()
 
 
+
 app = Flask(__name__)
 app.secret_key = 'iamfuckingcreazy'
 # session configuration

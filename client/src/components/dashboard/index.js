@@ -1,5 +1,14 @@
 import React from "react";
+import Navbar from "./navbar";
+import Offcanvas from "./offcanvas";
+import Compose from "./compose";
 
-export default function index() {
-  return <div>Hello world</div>;
+export default function Index() {
+  return (
+    <div>
+      <Navbar />
+      <Offcanvas />
+      <Compose />
+    </div>
+  );
 }
