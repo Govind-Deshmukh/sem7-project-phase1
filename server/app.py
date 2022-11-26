@@ -7,12 +7,16 @@ import firebase_admin
 from firebase_admin import credentials, db
 
 
-cred = credentials.Certificate("./firebase/firebaseconfig.json")
-firebase_admin.initialize_app(cred, {
-    "databaseURL": "https://sem7-project-default-rtdb.firebaseio.com",
+try:
+    cred = credentials.Certificate("./firebase/firebaseconfig.json")
+    firebase_admin.initialize_app(cred, {
+        "databaseURL": "https://sem7-project-default-rtdb.firebaseio.com",
 
-})
-ref = db.reference()
+    })
+    ref = db.reference()
+except Exception as e:
+    print(e)
+    print("Error connecting firebase")
 
 
 
@@ -77,10 +81,12 @@ def login():
         email = data['email']
         password = data['password']
         lst = email.split('@')
+        print(data)
         try:
-            data = ref.child('users').child(lst[0]).get()
-            serverUsername = data['email']
-            serverPassword = data['password']
+            serverdata = ref.child('users').child(lst[0]).get()
+            serverUsername = serverdata['email']
+            serverPassword = serverdata['password']
+
 
             if serverUsername == email and serverPassword == password:
                 return jsonify({
@@ -88,7 +94,7 @@ def login():
                     'message': 'Login successful',
                     'code' : 'Success',
                     'token' : jwt.encode({'user' : serverUsername, 'exp' : datetime.utcnow() + timedelta(hours=12)}, app.secret_key),
-                    'data' : data
+                    'data' : serverdata
                 })
             else:
                 return jsonify({

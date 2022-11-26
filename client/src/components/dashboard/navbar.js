@@ -1,12 +1,16 @@
 import React from "react";
-import "./style.css";
+import "./css/style.css";
 export default function navbar() {
+  const logout = () => {
+    localStorage.clear();
+  };
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg">
         <div className="container-fluid">
           <a className="navbar-brand" href="/">
-            Something
+            Message App
           </a>
           <button
             className="navbar-toggler"
@@ -32,17 +36,20 @@ export default function navbar() {
                 </a>
               </li>
             </ul>
-            <form className="d-flex" role="search">
+            <div className="d-flex">
               <button
-                className="btn btn-primary"
+                className="btn btn-primary m-1"
                 type="button"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasExample"
                 aria-controls="offcanvasExample"
               >
-                Profile
+                Profile & Settings
               </button>
-            </form>
+              <button className="btn btn-warning m-1" onClick={logout}>
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </nav>

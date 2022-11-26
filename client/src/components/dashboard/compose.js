@@ -1,46 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
+import "./css/ck.css";
 export default function Compose() {
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+
+  // fetching ck editor data as html and setting it to message state
   const CKData = (event, editor) => {
+    event.preventDefault();
     const data = editor.getData();
-    console.log({ event, editor, data });
+    setMessage(data);
+    console.log(data);
   };
+
+  // creating object named article for sending  message
+  const article = {
+    subject: subject,
+    message: message,
+  };
+
+  // final form submit
+  const formSubmit = (e) => {
+    e.preventDefault();
+    console.log(article);
+  };
+
   return (
     <div>
-      <div className="card m-5">
+      <div className="card m-5 bg-dark p-3 text-white">
         <div className="card-body">
-          <h5 className="card-title text-center">Compose a email</h5>
-          <form>
+          <h3 className="card-title text-center">Compose a email</h3>
+          <form onSubmit={formSubmit}>
             <div className="form-group mb-3">
               <h5 className="mt-2 mb-2">Subject for Email</h5>
-              <input type="text" className="form-control" />
+              <input
+                type="text"
+                className="form-control"
+                onChange={setSubject}
+              />
             </div>
             <div className="form-group mb-3">
               <h5 className="mt-2 mb-2">Create Message</h5>
-              <div className="">
+              <div className="text-dark">
                 <CKEditor
                   editor={ClassicEditor}
                   onReady={(editor) => {
                     console.log("Editor is ready");
                   }}
                   onChange={CKData}
-                  onInit={(editor) => {
-                    editor.editing.view.change((writer) => {
-                      writer.setStyle(
-                        "height",
-                        "200px",
-                        editor.editing.view.document.getRoot()
-                      );
-                    });
-                  }}
                 />
               </div>
             </div>
-            <div className="row mt-2 mb-2">
+            <div className="row mt-5 mb-1">
               <div className="col-4">
-                <div className="form-check">
+                <div className="form-group">
+                  <label className="form-check-label">
+                    Select HTML File as message
+                  </label>
                   <input type="file" className="form-control" placeholder="" />
                 </div>
               </div>
