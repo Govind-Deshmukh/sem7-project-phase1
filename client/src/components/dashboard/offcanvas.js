@@ -1,17 +1,13 @@
 import React, { useState } from "react";
+import swal from "sweetalert";
 
 export default function Offcanvas() {
   const data = JSON.parse(localStorage.getItem("data"));
 
+  const [serverAddress, setServerAddress] = useState("");
+  const [port, setPort] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [port, setPort] = useState("");
-  const [serverAddress, setServerAddress] = useState("");
-  //   const updateData = (e) => {
-  //     //prevent default form submit
-  //     e.preventDefault();
-  //     prompt("Enter your name");
-  //   };
 
   const saveSMTP = (e) => {
     //prevent default form submit
@@ -21,13 +17,27 @@ export default function Offcanvas() {
     const packet = {
       user: user,
       smtp: {
+        serverAddress: serverAddress,
+        port: port,
         email: email,
         password: password,
-        port: port,
-        serverAddress: serverAddress,
       },
     };
     console.log(packet);
+    // post request to save smtp details
+    fetch("http://localhost:5000/smtpConfig", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+      },
+      body: JSON.stringify(packet),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        swal(data.code, data.message, data.code.toLowerCase());
+      });
   };
 
   return (
@@ -70,61 +80,65 @@ export default function Offcanvas() {
           </table>
 
           <div className="containner bg-dark text-white rounded">
-            <form className="row m-2" onSubmit={saveSMTP}>
-              <div className="col-md-12">
-                <div className="form-group">
-                  <label>SMTP Server address</label>
-                  <input
-                    required
-                    type="text"
-                    className="form-control"
-                    placeholder="smtp.gmail.com"
-                    onChange={(e) => setServerAddress(e.target.value)}
-                  />
+            <div className="container">
+              <form className="row m-2" onSubmit={saveSMTP}>
+                <div className="col-md-12">
+                  <div className="form-group">
+                    <label>SMTP Server address</label>
+                    <input
+                      required
+                      type="text"
+                      className="form-control"
+                      placeholder={data.data.smtpConfig.host}
+                      onChange={(e) => setServerAddress(e.target.value)}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="col-md-12 m-1">
-                <div className="form-group">
-                  <label>SMTP port</label>
-                  <input
-                    required
-                    type="number"
-                    className="form-control"
-                    placeholder="Enter port number"
-                    onChange={(e) => setPort(e.target.value)}
-                  />
+                <div className="col-md-12 m-1">
+                  <div className="form-group">
+                    <label>SMTP port</label>
+                    <input
+                      required
+                      type="number"
+                      className="form-control"
+                      placeholder={data.data.smtpConfig.port}
+                      onChange={(e) => setPort(e.target.value)}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="col-md-12 m-1">
-                <div className="form-group">
-                  <label>SMTP Email address</label>
-                  <input
-                    required
-                    type="email"
-                    className="form-control"
-                    placeholder="Enter your email address"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+                <div className="col-md-12 m-1">
+                  <div className="form-group">
+                    <label>SMTP Email address</label>
+                    <input
+                      required
+                      type="email"
+                      className="form-control"
+                      placeholder={data.data.smtpConfig.email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="col-md-12 m-1">
-                <div className="form-group">
-                  <label>SMTP Email password</label>
-                  <input
-                    required
-                    type="password"
-                    className="form-control"
-                    placeholder="Enter your email password"
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                <div className="col-md-12 m-1">
+                  <div className="form-group">
+                    <label>SMTP Email password</label>
+                    <input
+                      required
+                      type="text"
+                      className="form-control"
+                      placeholder={data.data.smtpConfig.password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="col-md-12 m-1">
-                <div className="form-group">
-                  <button className="btn btn-danger">Save Configuration</button>
+                <div className="col-md-12 m-1">
+                  <div className="form-group">
+                    <button className="btn btn-danger">
+                      Save or Update SMTP Configuration
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
 
           {/* <button className="btn btn-primary" onClick={updateData()}>

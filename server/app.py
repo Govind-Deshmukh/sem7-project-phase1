@@ -109,6 +109,31 @@ def login():
                 'code' : 'Error'
             })
 
+@app.route('/smtpConfig', methods=['POST'])
+def smtpConfig():
+    if request.method =="POST":
+        data = request.get_json()
+        user = data['user']
+        smtp = data['smtp']
+        try:
+            ref.child('users').child(user).child('smtpConfig').set({
+                'host' : smtp["serverAddress"],
+                'port' : smtp['port'],
+                'email' : smtp['email'],
+                'password' : smtp['password']
+            })
+            return jsonify({
+                'status': True,
+                'message': 'SMTP Configured',
+                'code' : 'Success'
+            })
+        except Exception as e:
+            print(e)
+            return jsonify({
+                'status': False, 
+                'message': 'Error while configuring SMTP : {}'.format(e),
+                'code' : 'Error'
+            })
 
 if __name__ == '__main__':
     app.run(debug=True)

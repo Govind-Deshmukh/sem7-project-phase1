@@ -8,7 +8,6 @@ export default function Compose() {
 
   // fetching ck editor data as html and setting it to message state
   const CKData = (event, editor) => {
-    event.preventDefault();
     const data = editor.getData();
     setMessage(data);
     console.log(data);
