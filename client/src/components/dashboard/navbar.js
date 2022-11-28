@@ -3,6 +3,7 @@ import "./css/style.css";
 export default function navbar() {
   const logout = () => {
     localStorage.clear();
+    window.location.href = "/";
   };
 
   return (

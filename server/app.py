@@ -39,7 +39,6 @@ def register():
         name = data["name"]
         email = data["email"]
         password = data['password']
-        password = password.encode('utf-8')
 
         temp = email.split('@')
         temp_user = temp[0]
@@ -134,6 +133,8 @@ def smtpConfig():
                 'message': 'Error while configuring SMTP : {}'.format(e),
                 'code' : 'Error'
             })
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
