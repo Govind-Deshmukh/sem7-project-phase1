@@ -42,9 +42,9 @@ def register():
 
         temp = email.split('@')
         temp_user = temp[0]
-        print("\n\n")
-        print(name, email, password,temp_user)
-        print("\n\n")
+        # print("\n\n")
+        # print(name, email, password,temp_user)
+        # print("\n\n")
 
         try:
             if ref.child('users').child(temp_user).get() is None:
@@ -52,7 +52,13 @@ def register():
                             'name' : name,
                             'username' : temp_user,
                             'email' : email,
-                            'password' : password
+                            'password' : password,
+                            'smtpConfig' : {
+                                'email' : 'Enter your email',
+                                'host' : 'Enter your host',
+                                'password' : 'Enter youtr password',
+                                'port' : 'Enter your port',
+                            }
                 })
                 
                 return jsonify({

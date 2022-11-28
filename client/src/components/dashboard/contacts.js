@@ -12,18 +12,13 @@ export default function Contacts() {
     readXlsxFile(xyz).then((rows) => {
       // `rows` is an array of rows
       // each row being an array of cells.
+      // console.log(rows);
+      setContactList(rows);
     });
-    // send file to server
-    const formData = new FormData();
-    formData.append("file", file.target.files[0]);
-    fetch("http://localhost:5000/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      });
+    const fileData = {
+      listName: ContactListName,
+      list: ContactList,
+    };
   };
 
   const ContactListForm = () => {
