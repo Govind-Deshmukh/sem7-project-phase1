@@ -38,35 +38,39 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <div class="card">
-        <div class="card-header text-center">
-          <h3>Login</h3>
-        </div>
-        <div class="card-body">
-          <form onSubmit={loginFun}>
-            <div class="mb-3">
-              <label class="form-label">Email address</label>
-              <input
-                type="email"
-                class="form-control"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label>Password</label>
-              <input
-                type="password"
-                class="form-control"
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" class="btn btn-primary">
-              Submit
-            </button>
-          </form>
+    <div className="d-flex justify-content-center">
+      <div className="col-md-6">
+        <div class="card border border-dark rounded">
+          <div class="card-header text-center bg-dark text-white">
+            <h3>Login</h3>
+          </div>
+          <div class="card-body">
+            <form onSubmit={loginFun}>
+              <div class="mb-3">
+                <label class="form-label">Email address</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label>Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="text-center">
+                <button type="submit" class="btn btn-success w-50 ">
+                  Login
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

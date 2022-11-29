@@ -44,53 +44,57 @@ export default function Register() {
     }
   };
   return (
-    <div>
-      <div class="card">
-        <div class="card-header text-center">
-          <h3>Register</h3>
-        </div>
-        <div class="card-body">
-          <form onSubmit={register}>
-            <div class="mb-3">
-              <label>Full name</label>
-              <input
-                type="text"
-                class="form-control"
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email address</label>
-              <input
-                type="email"
-                class="form-control"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label>Password</label>
-              <input
-                type="password"
-                class="form-control"
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <label>Confirm Password</label>
-              <input
-                type="password"
-                class="form-control"
-                onChange={(e) => setConfPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" class="btn btn-primary">
-              Submit
-            </button>
-          </form>
+    <div className="d-flex justify-content-center">
+      <div className="col-md-6 mb-3">
+        <div class="card border border-dark rounded">
+          <div class="card-header text-center bg-dark text-white">
+            <h3>Register</h3>
+          </div>
+          <div class="card-body">
+            <form onSubmit={register}>
+              <div class="mb-3">
+                <label>Full name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email address</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label>Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label>Confirm Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  onChange={(e) => setConfPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="text-center">
+                <button type="submit" class="btn btn-info w-50 ">
+                  Register Now
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

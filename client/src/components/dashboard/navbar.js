@@ -5,6 +5,9 @@ export default function navbar() {
     localStorage.clear();
     window.location.href = "/";
   };
+  const segments = () => {
+    window.location.href = "/dashboard/CreateContactList";
+  };
 
   return (
     <div>
@@ -38,6 +41,9 @@ export default function navbar() {
               </li>
             </ul>
             <div className="d-flex">
+              <button className="btn btn-info m-1" onClick={segments}>
+                Segments
+              </button>
               <button
                 className="btn btn-primary m-1"
                 type="button"

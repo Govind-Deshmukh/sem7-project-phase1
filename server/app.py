@@ -140,7 +140,31 @@ def smtpConfig():
                 'code' : 'Error'
             })
 
-
+@app.route('/contactList', methods=['POST'])
+def contactList():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            user = data['user']
+            listName = data['ContactListName']
+            contacts = data['ContactList']
+            print(data)
+            ref.child('users').child(user).child('contactList').child(listName).set({
+                'listName' : listName,
+                'contacts' : contacts
+            })
+            return jsonify({
+                'status': True,
+                'message': 'Contact List',
+                'code' : 'Success',
+            })
+        except Exception as e:
+            print(e)
+            return jsonify({
+                'status': False, 
+                'message': 'Error while creating contact list : {}'.format(e),
+                'code' : 'Error'
+            })
 
 if __name__ == '__main__':
     app.run(debug=True)

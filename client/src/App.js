@@ -4,6 +4,7 @@ import Auth from "./components/auth/index";
 import Dashboard from "./components/dashboard/index";
 
 import isLoggedIn from "./components/helper/isLoggedIn";
+import Contacts from "./components/dashboard/contacts";
 
 function App() {
   return (
@@ -14,6 +15,10 @@ function App() {
           <Route
             path="/dashboard"
             element={isLoggedIn() ? <Dashboard /> : <Auth />}
+          />
+          <Route
+            path="/dashboard/CreateContactList"
+            element={isLoggedIn() ? <Contacts /> : <Auth />}
           />
         </Routes>
       </Router>
