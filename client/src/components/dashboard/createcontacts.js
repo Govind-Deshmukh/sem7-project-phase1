@@ -12,6 +12,7 @@ export default function Contacts() {
       setContactList(rows);
     });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -32,6 +33,8 @@ export default function Contacts() {
       });
       const data = await response.json();
       console.log(data);
+      localStorage.setItem("data", JSON.stringify(data.data));
+
       if (data.error) {
         swal(data.code, data.message, data.code.toLowerCase());
       } else {
@@ -39,8 +42,8 @@ export default function Contacts() {
           window.location.href = "/dashboard/CreateContactList";
         });
       }
-    } catch (error) {
-      swal("Error", error, "error");
+    } catch {
+      swal("Error", "Error creating list", "error");
     }
   };
 

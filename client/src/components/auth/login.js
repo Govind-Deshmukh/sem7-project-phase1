@@ -23,12 +23,13 @@ export default function Login() {
         body: JSON.stringify(artical),
       });
       const data = await response.json();
+
       if (data.error) {
         swal("Error", "Please enter valid data", "error");
       } else {
         swal(data.code, data.message, data.code.toLowerCase()).then(() => {
-          localStorage.setItem("token", data.token);
           localStorage.setItem("data", JSON.stringify(data));
+          localStorage.setItem("token", data.token);
           window.location.href = "/dashboard";
         });
       }

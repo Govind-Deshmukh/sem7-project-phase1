@@ -18,8 +18,7 @@
     "react-scripts": "5.0.1",
     "read-excel-file": "^5.5.3",
     "sweetalert": "^2.1.2",
-    "web-vitals": "^2.1.4",
-    "xlsx": "file:xlsx-0.19.1.tgz"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",

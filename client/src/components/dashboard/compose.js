@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "./css/ck.css";
+import SelectContact from "./selectcontact";
 export default function Compose() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
@@ -51,6 +52,7 @@ export default function Compose() {
                 />
               </div>
             </div>
+            <SelectContact />
             <div className="row mt-5 mb-1">
               <div className="col-4">
                 <div className="form-group">

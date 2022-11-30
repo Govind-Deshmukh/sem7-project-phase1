@@ -105,7 +105,8 @@ def login():
                 return jsonify({
                     'status': False, 
                     'message': 'Login Failed',
-                    'code' : 'Error'
+                    'code' : 'Error',
+                    'data' : serverdata
                 })
         except Exception as e:
             return jsonify({
@@ -157,15 +158,18 @@ def contactList():
             print(contacts)
 
 
+
             ref.child('users').child(user).child('contactList').child(listName).set({
                 'listName' : listName,
                 'contacts' : contacts
+                
             })
-            
+            temp = ref.child('users').child(user).get()
             return jsonify({
                 'status': True,
                 'message': 'Contact List',
                 'code' : 'Success',
+                'data' : temp
             })
         except Exception as e:
             print(e)
