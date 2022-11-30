@@ -147,12 +147,14 @@ def contactList():
             data = request.get_json()
             user = data['user']
             listName = data['ContactListName']
-            contacts = data['ContactList']
-            print(data)
-            ref.child('users').child(user).child('contactList').child(listName).set({
-                'listName' : listName,
-                'contacts' : contacts
-            })
+            contacts = data['ContactListData']
+            # print(data)
+            print(user,'\n',listName,'\n',contacts)
+
+            # ref.child('users').child(user).child('contactList').child(listName).set({
+            #     'listName' : listName,
+            #     'contacts' : contacts
+            # })
             return jsonify({
                 'status': True,
                 'message': 'Contact List',
