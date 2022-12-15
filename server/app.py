@@ -42,10 +42,6 @@ def register():
 
         temp = email.split('@')
         temp_user = temp[0]
-        # print("\n\n")
-        # print(name, email, password,temp_user)
-        # print("\n\n")
-
         try:
             if ref.child('users').child(temp_user).get() is None:
                 ref.child('users').child(temp_user).set({
@@ -53,12 +49,6 @@ def register():
                             'username' : temp_user,
                             'email' : email,
                             'password' : password,
-                            'smtpConfig' : {
-                                'email' : 'Enter your email',
-                                'host' : 'Enter your host',
-                                'password' : 'Enter youtr password',
-                                'port' : 'Enter your port',
-                            }
                 })
                 
                 return jsonify({
@@ -91,22 +81,19 @@ def login():
             serverdata = ref.child('users').child(lst[0]).get()
             serverUsername = serverdata['email']
             serverPassword = serverdata['password']
-
-
             if serverUsername == email and serverPassword == password:
-                return jsonify({
-                    'status': True,
-                    'message': 'Login successful',
-                    'code' : 'Success',
-                    'token' : jwt.encode({'user' : serverUsername, 'exp' : datetime.utcnow() + timedelta(hours=12)}, app.secret_key),
-                    'data' : serverdata
-                })
+                    return jsonify({
+                        'status': True,
+                        'message': 'Login successful',
+                        'code' : 'Success',
+                        'token' : jwt.encode({'user' : serverUsername, 'exp' : datetime.utcnow() + timedelta(hours=12)}, app.secret_key),
+                        'data' : serverdata
+                    })
             else:
                 return jsonify({
                     'status': False, 
                     'message': 'Login Failed',
-                    'code' : 'Error',
-                    'data' : serverdata
+                    'code' : 'Error'
                 })
         except Exception as e:
             return jsonify({
@@ -128,10 +115,13 @@ def smtpConfig():
                 'email' : smtp['email'],
                 'password' : smtp['password']
             })
+            data = ref.child('users').child(user).get()
+            # print(data)
             return jsonify({
                 'status': True,
                 'message': 'SMTP Configured',
-                'code' : 'Success'
+                'code' : 'Success',
+                'data' : data
             })
         except Exception as e:
             print(e)
@@ -147,8 +137,9 @@ def contactList():
         try:
             data = request.get_json()
             user = data['user']
-            listName = data['ContactListName']
-            temp_contacts = data['ContactListData']
+            segment = data['segment']
+            listName = segment['segmentName']
+            temp_contacts = segment['segmentData']
             # print(data)
             print(user,'\n',listName,'\n')
 
@@ -157,20 +148,47 @@ def contactList():
                 contacts.append(i[0])
             print(contacts)
 
-
-
             ref.child('users').child(user).child('contactList').child(listName).set({
                 'listName' : listName,
                 'contacts' : contacts
                 
             })
-            temp = ref.child('users').child(user).get()
+            serverdata = ref.child('users').child(user).get()
+        
             return jsonify({
-                'status': True,
-                'message': 'Contact List',
-                'code' : 'Success',
-                'data' : temp
+                    'status': True,
+                    'message': 'Created successful',
+                    'code' : 'Success',
+                    'data' : serverdata
+                })
+
+        except Exception as e:
+            print(e)
+            return jsonify({
+                'status': False, 
+                'message': 'Error while creating contact list : {}'.format(e),
+                'code' : 'Error'
             })
+
+@app.route('/deleteContact', methods=['POST'])
+def deleteList():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            user = data['user']
+            listName = data['contact']
+            print(user,'\n',listName,'\n')
+
+
+            # delete the list
+            ref.child('users').child(user).child('contactList').child(listName).delete()
+            serverdata = ref.child('users').child(user).get()
+            return jsonify({
+                    'status': True,
+                    'message': 'Created successful',
+                    'code' : 'Success',
+                    'data' : serverdata
+                })
         except Exception as e:
             print(e)
             return jsonify({
