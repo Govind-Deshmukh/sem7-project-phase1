@@ -11,11 +11,12 @@ export default function profile() {
     try {
       const btnid = contactList;
       const user = JSON.parse(localStorage.getItem("user"));
-      console.log(btnid, user.username);
+      // console.log(btnid, user.username);
       const response = fetch("http://localhost:5000/deleteContact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
           user: user.username,
@@ -24,16 +25,15 @@ export default function profile() {
       });
 
       const data = await response.json();
-      if (data.error) {
-        swal("Error", "Please enter valid data", "error");
-      } else {
-        swal(data.code, data.message, data.code.toLowerCase()).then(() => {
-          localStorage.setItem(
-            "contactLists",
-            JSON.stringify(data.data.contactList)
-          );
-        });
-      }
+      console.log(data);
+      swal(data.code, data.message, data.code.toLowerCase()).then(() => {
+        localStorage.setItem(
+          "contactLists",
+          JSON.stringify(data.data.contactList)
+        );
+        console.log(data.data.contactList);
+        window.location.reload();
+      });
     } catch (err) {
       swal("Error", "Something went wrong " + { err }, "error");
     }

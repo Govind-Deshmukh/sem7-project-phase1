@@ -177,15 +177,12 @@ def deleteList():
             data = request.get_json()
             user = data['user']
             listName = data['contact']
-            print(user,'\n',listName,'\n')
-
-
-            # delete the list
+            # print(user,'\n',listName,'\n')
             ref.child('users').child(user).child('contactList').child(listName).delete()
             serverdata = ref.child('users').child(user).get()
             return jsonify({
                     'status': True,
-                    'message': 'Created successful',
+                    'message': 'Deleted successful',
                     'code' : 'Success',
                     'data' : serverdata
                 })
@@ -193,7 +190,7 @@ def deleteList():
             print(e)
             return jsonify({
                 'status': False, 
-                'message': 'Error while creating contact list : {}'.format(e),
+                'message': 'Error while deleting contact list : {}'.format(e),
                 'code' : 'Error'
             })
 
