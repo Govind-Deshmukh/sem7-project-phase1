@@ -36,7 +36,7 @@ export default function Register() {
     <div className="shadow-lg p-3 mb-5 bg-body rounded">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title text-center">Login here</h3>
+          <h3 class="card-title text-center">Register here</h3>
           <form className="m-4" onSubmit={handleSubmit}>
             <div class="form-group mb-3">
               <label for="">Email address</label>
