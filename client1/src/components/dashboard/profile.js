@@ -2,7 +2,7 @@ import React from "react";
 import swal from "sweetalert";
 import { Link } from "react-router-dom";
 import Navbar from "./navbar";
-
+import axios from "axios";
 export default function profile() {
   const userProfile = JSON.parse(localStorage.getItem("user"));
 
@@ -12,28 +12,13 @@ export default function profile() {
       const btnid = contactList;
       const user = JSON.parse(localStorage.getItem("user"));
       // console.log(btnid, user.username);
-      const response = fetch("http://localhost:5000/deleteContact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({
-          user: user.username,
-          contact: btnid,
-        }),
+
+      const res = await axios.post("http://localhost:5000/deleteContact", {
+        user: user.username,
+        contact: btnid,
       });
 
-      const data = await response.json();
-      console.log(data);
-      swal(data.code, data.message, data.code.toLowerCase()).then(() => {
-        localStorage.setItem(
-          "contactLists",
-          JSON.stringify(data.data.contactList)
-        );
-        console.log(data.data.contactList);
-        window.location.reload();
-      });
+      console.log(res.data);
     } catch (err) {
       swal("Error", "Something went wrong " + { err }, "error");
     }

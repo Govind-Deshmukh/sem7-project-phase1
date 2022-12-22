@@ -167,6 +167,7 @@ def contactList():
                 'message': 'Error while creating contact list : {}'.format(e),
                 'code' : 'Error'
             })
+
 @app.route('/sendMail', methods=['POST'])
 def sendMail():
     if request.method == 'POST':
@@ -200,5 +201,32 @@ def sendMail():
                 'message': 'Error while sending mail : {}'.format(e),
                 'code' : 'Error'
             })
+
+@app.route('/deleteContact', methods=['POST'])
+def deleteList():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            user = data['user']
+            listName = data['contact']
+            print("Deleting the list of ",user,' : ',listName,'\n')
+
+            # delete the list
+            ref.child('users').child(user).child('contactList').child(listName).delete()
+            serverdata = ref.child('users').child(user).get()
+            return jsonify({
+                    'status': True,
+                    'message': 'deleted successful',
+                    'code' : 'Success',
+                    'data' : serverdata
+                })
+        except Exception as e:
+            print(e)
+            return jsonify({
+                'status': False, 
+                'message': 'Error while deleting contact list : {}'.format(e),
+                'code' : 'Error'
+            })
+
 if __name__ == '__main__':
     app.run(debug=True)
