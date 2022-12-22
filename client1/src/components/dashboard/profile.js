@@ -2,23 +2,38 @@ import React from "react";
 import swal from "sweetalert";
 import { Link } from "react-router-dom";
 import Navbar from "./navbar";
-import axios from "axios";
-export default function profile() {
+export default function Profile() {
   const userProfile = JSON.parse(localStorage.getItem("user"));
+
+  // const [temp, setTemp] = useState({});
+
+  // created a use effect
 
   // delete contact list function on btn call
   const deleteContact = async (contactList) => {
     try {
       const btnid = contactList;
       const user = JSON.parse(localStorage.getItem("user"));
-      // console.log(btnid, user.username);
 
-      const res = await axios.post("http://localhost:5000/deleteContact", {
-        user: user.username,
-        contact: btnid,
-      });
-
-      console.log(res.data);
+      fetch("http://localhost:5000/deleteContact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({ user: user.username, contact: btnid }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // console.log(data);
+          swal(data.code, data.message, data.code.toLowerCase()).then(() => {
+            localStorage.setItem(
+              "segmentConfig",
+              JSON.stringify(data.data.contactList)
+            );
+            window.location.href = "/dashboard/profile";
+          });
+        });
     } catch (err) {
       swal("Error", "Something went wrong " + { err }, "error");
     }
