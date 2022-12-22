@@ -6,40 +6,60 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 export default function Compose() {
   const [message, setMessage] = useState("");
   const [subject, setSubject] = useState("");
+  const [segment, setSegment] = useState("");
 
-  const handleSubmit = (e) => {
+  // call CC send mail function
+  const sendCC = (e) => {
     e.preventDefault();
-    console.log(message);
-    console.log(subject);
+    const artical = { message, subject, segment, type: "cc" };
+    console.log(artical);
+  };
+
+  // call BCC send mail function
+  const sendBCC = (e) => {
+    e.preventDefault();
+    const artical = { message, subject, segment, type: "bcc" };
+    console.log(artical);
   };
 
   return (
     <>
       <div className="m-5">
         <div className="row">
-          <div className="col-md-2 rounded border border-secondary"></div>
-          <div className="col-md-10">
-            <div className="card rounded border border-secondary">
+          <div className="col-md-2  mt-2">
+            <ul class="list-group mt-3">
+              <li class="list-group-item active">Compose Mail</li>
+              <li class="list-group-item">Inbox</li>
+              <li class="list-group-item">Sent Mails</li>
+              <li class="list-group-item">Spam Mails</li>
+            </ul>
+          </div>
+          <div className="col-md-10 mt-2 shadow-lg p-3 mb-5 rounded">
+            <div className="card rounded border">
               <div className="card-header">
                 <h3>Compose a mail</h3>
               </div>
               <div className="card-body">
                 <form>
                   <div className="form-group mb-3">
-                    <label className="form-label">Email address</label>
+                    <label className="form-label">Enter mail subject</label>
                     <input
+                      required
                       type="text"
                       className="form-control"
                       placeholder="Enter mail subject"
+                      onchange={(e) => {
+                        setSubject(e.target.value);
+                      }}
                     />
                   </div>
                   <div className="form-group mb-3">
                     <label className="form-label">Type message in editor</label>
                     <CKEditor
+                      required
                       editor={ClassicEditor}
                       onReady={(editor) => {
-                        // You can store the "editor" and use when it is needed.
-                        console.log("Editor is ready to use!");
+                        console.log("You are ready to use the editor");
                       }}
                       onChange={(event, editor) => {
                         const data = editor.getData();
@@ -51,7 +71,13 @@ export default function Compose() {
 
                   <div class="form-group mb-3">
                     <label className="form-label">Select target segment</label>
-                    <select class="form-control" required>
+                    <select
+                      class="form-control"
+                      required
+                      onChange={(e) => {
+                        setSegment(e.target.value);
+                      }}
+                    >
                       {Object.keys(
                         JSON.parse(localStorage.getItem("segmentConfig"))
                       ).map((item) => {
@@ -64,9 +90,22 @@ export default function Compose() {
                     </select>
                   </div>
 
-                  <button type="submit" className="btn btn-primary">
-                    Submit
-                  </button>
+                  <div className="text-center">
+                    <button
+                      type="submit"
+                      className="btn btn-info m-3"
+                      onSubmit={sendCC}
+                    >
+                      Send Mail as CC
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary m-3"
+                      onSubmit={sendBCC}
+                    >
+                      Send Mail as BCC
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
