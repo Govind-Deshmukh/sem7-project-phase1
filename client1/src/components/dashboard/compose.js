@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-// import checkData from "./helper/checkData";
+// import checkData from "./helper/checkData"
+import swal from "sweetalert";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
@@ -11,15 +12,20 @@ export default function Compose() {
   // call CC send mail function
   const sendCC = (e) => {
     e.preventDefault();
-    const artical = { message, subject, segment, type: "cc" };
-    console.log(artical);
+    document.getElementById("bcc").style.display = "none";
   };
 
   // call BCC send mail function
   const sendBCC = (e) => {
     e.preventDefault();
-    const artical = { message, subject, segment, type: "bcc" };
-    console.log(artical);
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const artical = { message, subject, segment, type: "bcc", user };
+      console.log(artical);
+      // write your own logic to send mail
+    } catch (err) {
+      swal("Error", "Something went wrong", "error");
+    }
   };
 
   return (
@@ -64,7 +70,6 @@ export default function Compose() {
                       onChange={(event, editor) => {
                         const data = editor.getData();
                         setMessage(data);
-                        console.log({ event, editor, data });
                       }}
                     />
                   </div>
@@ -95,13 +100,17 @@ export default function Compose() {
                       type="submit"
                       className="btn btn-info m-3"
                       onSubmit={sendCC}
+                      id="submitBTNCC"
+                      value="cc"
                     >
                       Send Mail as CC
                     </button>
                     <button
                       type="submit"
+                      id="submitBTNBCC"
                       className="btn btn-primary m-3"
                       onSubmit={sendBCC}
+                      value="bcc"
                     >
                       Send Mail as BCC
                     </button>
