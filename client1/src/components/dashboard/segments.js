@@ -8,6 +8,8 @@ export default function Segments() {
   const [segmentName, setSegmentName] = useState("");
   const [rows, setSegmentData] = useState([]);
 
+  const [formStatus, setFormStatus] = useState(false);
+
   // read excel sheet data
   const readExcel = (e) => {
     e.preventDefault();
@@ -94,7 +96,11 @@ export default function Segments() {
                 </div>
               </div>
               <div className="text-center">
-                <button type="submit" class="btn btn-lg btn-success">
+                <button
+                  type="submit"
+                  class="btn btn-lg btn-success"
+                  onSubmit={setFormStatus(!formStatus)}
+                >
                   Save or Submit
                 </button>
               </div>

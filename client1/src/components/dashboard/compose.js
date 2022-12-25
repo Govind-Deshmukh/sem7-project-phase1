@@ -73,6 +73,7 @@ export default function Compose() {
                         onChange={(event, editor) => {
                           const data = editor.getData();
                           setMessage(data);
+                          console.log(data);
                         }}
                       />
                     </div>
