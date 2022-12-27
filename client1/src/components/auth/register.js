@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+import register from "./functions/registerService";
+import swal from "sweetalert";
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,6 +14,15 @@ export default function Register() {
       alert("Password not match");
     } else {
       console.log(artical);
+      register(artical).then((data) => {
+        if (data.code === "Success") {
+          swal(data.code, data.message, data.code.toLowerCase()).then(() => {
+            window.location.href = "/";
+          });
+        } else {
+          swal(data.code, data.message, data.code.toLowerCase());
+        }
+      });
     }
   };
 
