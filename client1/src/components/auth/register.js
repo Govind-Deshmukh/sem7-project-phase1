@@ -1,21 +1,67 @@
 import React, { useState } from "react";
-
+import swal from "sweetalert";
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordc, setPasswordc] = useState("");
   const [name, setName] = useState("");
 
-  const handleSubmit = (e) => {
+  // const register = (e) => {
+  //     e.preventDefault();
+  //     const artical = { email, password, passwordc, name };
+  //     if (password !== passwordc) {
+  //       alert("Password not match");
+  //     } else {
+  //       console.log(artical);
+  //       register(artical).then((data) => {
+  //         if (data.code === "Success") {
+  //           swal(data.code, data.message, data.code.toLowerCase()).then(() => {
+  //             window.location.href = "/dashboard";
+  //           });
+  //         } else {
+  //           swal(data.code, data.message,data.code.toLowerCase());
+  //         }
+  //       });
+  //     }
+  //   };
+
+  const register = async (e) => {
     e.preventDefault();
-    const artical = { email, password, passwordc, name };
+    console.log("register");
     if (password !== passwordc) {
-      alert("Password not match");
+      swal("Password not matched", "Please enter same password", "error");
     } else {
-      console.log(artical);
+      try {
+        const artical = {
+          name: name,
+          email: email,
+          password: password,
+        };
+        console.log(artical);
+        const response = await fetch("http://localhost:5000/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify(artical),
+        });
+        const data = await response.json();
+
+        if (data.error) {
+          console.log(data.error);
+          swal("Error", "Please enter valid data", "error");
+        } else {
+          swal(data.code, data.message, data.code.toLowerCase()).then(() => {
+            console.log(data);
+            window.location.href = "/";
+          });
+        }
+      } catch (error) {
+        swal("Error", "Please enter valid data", "error");
+      }
     }
   };
-
   const passShow = () => {
     const pass = document.getElementById("passwordr");
     const pass2 = document.getElementById("passwordcr");
@@ -36,8 +82,8 @@ export default function Register() {
     <div className="shadow-lg p-3 mb-5 bg-body rounded">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title text-center">Register here</h3>
-          <form className="m-4" onSubmit={handleSubmit}>
+          <h3 class="card-title text-center">Login here</h3>
+          <form className="m-4" onSubmit={register}>
             <div class="form-group mb-3">
               <label for="">Email address</label>
               <input
