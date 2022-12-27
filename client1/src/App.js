@@ -16,35 +16,39 @@ import Profile from "./components/dashboard/profile";
 import Segments from "./components/dashboard/segments";
 import SmtpConfig from "./components/dashboard/smtp";
 
+// compose inbox components
+import Inbox from "./components/dashboard/inboxComp/inbox";
+
 function App() {
   return (
     <div className="App">
       <Router>
         <Routes>
           <Route path="/" element={<Auth />} />
-        </Routes>
-        <Routes>
+
           <Route
             path="/dashboard"
             element={isLogged() ? <Dashboard /> : <Auth />}
           />
-        </Routes>
-        <Routes>
+
           <Route
             path="/dashboard/profile"
             element={isLogged() ? <Profile /> : <Auth />}
           />
-        </Routes>
-        <Routes>
+
           <Route
             path="/dashboard/segments"
             element={isLogged() ? <Segments /> : <Auth />}
           />
-        </Routes>
-        <Routes>
+
           <Route
             path="/dashboard/smtpconfig"
             element={isLogged() ? <SmtpConfig /> : <Auth />}
+          />
+
+          <Route
+            path="/dashboard/inbox"
+            element={isLogged() ? <Inbox /> : <Auth />}
           />
         </Routes>
       </Router>

@@ -5,6 +5,8 @@ from flask_cors import CORS
 import jwt
 from flask_bcrypt import Bcrypt
 
+from inbox import getMails
+
 # data base configuration 
 import firebase_admin
 from firebase_admin import credentials
@@ -123,6 +125,8 @@ def configureation():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

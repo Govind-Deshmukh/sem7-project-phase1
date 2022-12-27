@@ -2,10 +2,10 @@ from flask import Flask, request,jsonify
 from flask_cors import CORS
 import jwt 
 from datetime import datetime, timedelta
-
+# from inbox import getMails
 import firebase_admin
 from firebase_admin import credentials, db
-
+import imaplib, email, os
 try:
     cred = credentials.Certificate("./firebase/firebaseconfig.json")
     firebase_admin.initialize_app(cred, {
@@ -28,6 +28,38 @@ CORS(app)
 # getting date and time
 date = datetime.now()
 date = date.strftime("%d-%m-%Y,%H:%M:%S")
+
+
+
+
+
+
+def getMails(user, password, imap_url):
+    try:
+        connection = imaplib.IMAP4_SSL(imap_url)
+        connection.login(user, password)
+        result, data = connection.uid('search', None, "ALL")
+        if result == 'OK':
+            for num in data[0].split():
+                result, data = connection.uid('fetch', num, '(RFC822)')
+                if result == 'OK':
+                    email_message = email.message_from_bytes(data[0][1])
+                    print('From:' + email_message['From'])
+                    print('To:' + email_message['To'])
+                    print('Date:' + email_message['Date'])
+                    print('Subject:' + str(email_message['Subject']))
+                    print('Content:' + str(email_message.get_payload()[0]))
+        connection.close()
+        connection.logout()
+    except Exception as e:
+        print(e)
+        print("Error connecting firebase")
+
+
+
+
+
+
 
 
 @app.route('/register', methods=['POST'])
@@ -227,6 +259,22 @@ def deleteList():
                 'message': 'Error while deleting contact list : {}'.format(e),
                 'code' : 'Error'
             })
+
+@app.route('/getMailss', methods=['POST'])
+def getMailss():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            user = data['user']
+            # print(data)
+            # serverdata = ref.child('users').child(user).get()
+            # password = serverdata['smtpConfig']['password']
+            imap_url = 'imap.gmail.com'
+            getMails("vyanketsht246@gmail.com", "rcpshspisoidrmvc","imap.gmail.com")
+            return "FUck you"
+        except Exception as e:
+            print(e)
+            return "FUck you ultra pro"
 
 if __name__ == '__main__':
     app.run(debug=True)

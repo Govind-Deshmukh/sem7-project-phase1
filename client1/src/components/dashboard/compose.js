@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 // import checkData from "./helper/checkData"
 import swal from "sweetalert";
+import { Link } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
@@ -28,6 +29,23 @@ export default function Compose() {
     }
   };
 
+  const newfunc = () => {
+    console.log(localStorage.getItem("segmentConfig"));
+    if (localStorage.getItem("segmentConfig")) {
+      return Object.keys(JSON.parse(localStorage.getItem("segmentConfig"))).map(
+        (item) => {
+          return (
+            <option value={item} key={item}>
+              {item}
+            </option>
+          );
+        }
+      );
+    } else {
+      console.log("Error");
+    }
+  };
+
   try {
     return (
       <>
@@ -35,8 +53,12 @@ export default function Compose() {
           <div className="row">
             <div className="col-md-2  mt-2">
               <ul class="list-group mt-3">
-                <li class="list-group-item active">Compose Mail</li>
-                <li class="list-group-item">Inbox</li>
+                <Link class="list-group-item active" to="/dashboard">
+                  Compose Mail
+                </Link>
+                <Link class="list-group-item" to="/dashboard/inbox">
+                  Inbox
+                </Link>
                 <li class="list-group-item">Sent Mails</li>
                 <li class="list-group-item">Spam Mails</li>
               </ul>
@@ -89,15 +111,7 @@ export default function Compose() {
                           setSegment(e.target.value);
                         }}
                       >
-                        {Object.keys(
-                          JSON.parse(localStorage.getItem("segmentConfig"))
-                        ).map((item) => {
-                          return (
-                            <option value={item} key={item}>
-                              {item}
-                            </option>
-                          );
-                        })}
+                        {newfunc()}
                       </select>
                     </div>
 

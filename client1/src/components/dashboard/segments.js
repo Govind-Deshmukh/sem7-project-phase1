@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import Navbar from "./navbar";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import readXlsxFile from "read-excel-file";
 
 export default function Segments() {
+  let navigate = useNavigate();
   const [segmentName, setSegmentName] = useState("");
   const [rows, setSegmentData] = useState([]);
 
-  const [formStatus, setFormStatus] = useState(false);
+  const [demo2, setDemo2] = useState([]);
+  // const [formStatus, setFormStatus] = useState(false);
 
   // read excel sheet data
   const readExcel = (e) => {
@@ -44,13 +46,14 @@ export default function Segments() {
       })
         .then((res) => res.json())
         .then((data) => {
-          // console.log(data);
           swal(data.code, data.message, data.code.toLowerCase()).then(() => {
-            localStorage.setItem(
-              "segmentConfig",
-              JSON.stringify(data.data.contactList)
+            setDemo2(
+              localStorage.setItem(
+                "segmentConfig",
+                JSON.stringify(data.data.contactList)
+              )
             );
-            window.location.href = "/dashboard/profile";
+            navigate("/dashboard/profile");
           });
         });
     } catch (err) {
@@ -96,11 +99,7 @@ export default function Segments() {
                 </div>
               </div>
               <div className="text-center">
-                <button
-                  type="submit"
-                  class="btn btn-lg btn-success"
-                  onSubmit={setFormStatus(!formStatus)}
-                >
+                <button type="submit" class="btn btn-lg btn-success">
                   Save or Submit
                 </button>
               </div>

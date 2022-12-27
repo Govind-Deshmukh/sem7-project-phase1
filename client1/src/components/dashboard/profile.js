@@ -1,13 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { Link } from "react-router-dom";
 import Navbar from "./navbar";
 export default function Profile() {
   const userProfile = JSON.parse(localStorage.getItem("user"));
-
-  // const [temp, setTemp] = useState({});
-
-  // created a use effect
+  const [demo, setDemo] = useState([]);
 
   // delete contact list function on btn call
   const deleteContact = async (contactList) => {
@@ -27,11 +24,13 @@ export default function Profile() {
         .then((data) => {
           // console.log(data);
           swal(data.code, data.message, data.code.toLowerCase()).then(() => {
-            localStorage.setItem(
-              "segmentConfig",
-              JSON.stringify(data.data.contactList)
+            setDemo(
+              localStorage.setItem(
+                "segmentConfig",
+                JSON.stringify(data.data.contactList)
+              )
             );
-            window.location.href = "/dashboard/profile";
+            console.log(demo);
           });
         });
     } catch (err) {
@@ -172,6 +171,7 @@ export default function Profile() {
                               className="btn btn-danger"
                               value={contactList}
                               onClick={() => {
+                                setDemo((prev) => prev + 1);
                                 swal({
                                   title: "Are you sure?",
                                   text: "Once deleted , you will not be able to recover this!",
