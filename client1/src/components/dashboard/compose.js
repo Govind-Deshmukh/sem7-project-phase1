@@ -4,51 +4,64 @@ import swal from "sweetalert";
 import { Link } from "react-router-dom";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
+import Navbar from "./navbar";
 export default function Compose() {
+  const [to, setmail] = useState("");
   const [message, setMessage] = useState("");
   const [subject, setSubject] = useState("");
-  const [segment, setSegment] = useState("");
+  const [clist, setClist] = useState("");
+  const [btn, setBtn] = useState("");
+  const user = JSON.parse(localStorage.getItem("user")).username;
+  const list_of_mail = JSON.parse(localStorage.getItem("segmentConfig"));
 
-  // call CC send mail function
-  const sendCC = (e) => {
+  const smtpconfigdata = JSON.parse(localStorage.getItem("smtpConfig"));
+  let txt;
+  function clickHandler1() {
+    txt = document.getElementById("btn1").innerText;
+    setBtn(txt);
+  }
+
+  function clickHandler3() {
+    txt = document.getElementById("btn3").innerText;
+    setBtn(txt);
+  }
+  function clickHandler2() {
+    txt = document.getElementById("btn2").innerText;
+    setBtn(txt);
+  }
+  const sendata = (e) => {
     e.preventDefault();
-    document.getElementById("bcc").style.display = "none";
-  };
 
-  // call BCC send mail function
-  const sendBCC = (e) => {
-    e.preventDefault();
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const artical = { message, subject, segment, type: "bcc", user };
-      console.log(artical);
-      // write your own logic to send mail
-    } catch (err) {
-      swal("Error", "Something went wrong", "error");
-    }
-  };
-
-  const newfunc = () => {
-    console.log(localStorage.getItem("segmentConfig"));
-    if (localStorage.getItem("segmentConfig")) {
-      return Object.keys(JSON.parse(localStorage.getItem("segmentConfig"))).map(
-        (item) => {
-          return (
-            <option value={item} key={item}>
-              {item}
-            </option>
-          );
-        }
-      );
-    } else {
-      console.log("Error");
-    }
+    const data = {
+      to,
+      subject,
+      message,
+      list_of_mail,
+      smtpconfigdata,
+      clist,
+      btn,
+      user,
+    };
+    console.log(to, subject, message, clist, btn, user);
+    fetch("http://localhost:5000/composemail", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        swal(data.code, data.message, data.code.toLowerCase()).then(() => {
+          window.location.href = "/dashboard";
+        });
+      });
   };
 
   try {
     return (
       <>
+        <Navbar />
         <div className="m-5">
           <div className="row">
             <div className="col-md-2  mt-2">
@@ -69,15 +82,23 @@ export default function Compose() {
                   <h3>Compose a mail</h3>
                 </div>
                 <div className="card-body">
-                  <form>
+                  <form onSubmit={sendata}>
                     <div className="form-group mb-3">
-                      <label className="form-label">Enter mail subject</label>
+                      <label className="form-label">Email address</label>
                       <input
-                        required
-                        type="text"
+                        type="email"
                         className="form-control"
+                        placeholder="Enter the mail"
+                        onChange={(e) => {
+                          setmail(e.target.value);
+                        }}
+                      />
+                      <label className="form-label my-2 ">Subject</label>
+                      <input
+                        type="text"
+                        className="form-control "
                         placeholder="Enter mail subject"
-                        onchange={(e) => {
+                        onChange={(e) => {
                           setSubject(e.target.value);
                         }}
                       />
@@ -95,7 +116,6 @@ export default function Compose() {
                         onChange={(event, editor) => {
                           const data = editor.getData();
                           setMessage(data);
-                          console.log(data);
                         }}
                       />
                     </div>
@@ -106,31 +126,51 @@ export default function Compose() {
                       </label>
                       <select
                         class="form-control"
-                        required
                         onChange={(e) => {
-                          setSegment(e.target.value);
+                          setClist(e.target.value);
                         }}
                       >
-                        {newfunc()}
+                        <option value="" selected>
+                          Choose list item
+                        </option>
+                        {Object.keys(
+                          JSON.parse(localStorage.getItem("segmentConfig"))
+                        ).map((item) => {
+                          return (
+                            <option value={item} key={item}>
+                              {item}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
 
                     <div className="text-center">
                       <button
                         type="submit"
-                        className="btn btn-info m-3"
-                        onSubmit={sendCC}
-                        id="submitBTNCC"
+                        className="btn btn-success m-3"
+                        id="btn1"
                         value="cc"
+                        onClick={clickHandler1}
+                      >
+                        Send Mail
+                      </button>
+
+                      <button
+                        type="submit"
+                        className="btn btn-info m-3"
+                        id="btn2"
+                        value="cc"
+                        onClick={clickHandler2}
                       >
                         Send Mail as CC
                       </button>
                       <button
                         type="submit"
-                        id="submitBTNBCC"
+                        id="btn3"
                         className="btn btn-primary m-3"
-                        onSubmit={sendBCC}
                         value="bcc"
+                        onClick={clickHandler3}
                       >
                         Send Mail as BCC
                       </button>

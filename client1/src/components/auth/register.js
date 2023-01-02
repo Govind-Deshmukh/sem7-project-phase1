@@ -13,7 +13,7 @@ export default function Register() {
     if (password !== passwordc) {
       alert("Password not match");
     } else {
-      console.log(artical);
+    
       register(artical).then((data) => {
         if (data.code === "Success") {
           swal(data.code, data.message, data.code.toLowerCase()).then(() => {

@@ -5,7 +5,6 @@ import Compose from "./compose";
 export default function index() {
   return (
     <div>
-      <Navbar />
       <Compose />
     </div>
   );

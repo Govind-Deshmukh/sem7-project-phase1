@@ -1,6 +1,10 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
 from flask import Flask, request,jsonify
 from flask_cors import CORS
 import jwt 
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 # from inbox import getMails
 import firebase_admin
@@ -17,7 +21,6 @@ except Exception as e:
     print("Error connecting firebase")
 
 
-
 app = Flask(__name__)
 app.secret_key = 'iamfuckingcreazy'
 # session configuration
@@ -28,39 +31,6 @@ CORS(app)
 # getting date and time
 date = datetime.now()
 date = date.strftime("%d-%m-%Y,%H:%M:%S")
-
-
-
-
-
-
-def getMails(user, password, imap_url):
-    try:
-        connection = imaplib.IMAP4_SSL(imap_url)
-        connection.login(user, password)
-        result, data = connection.uid('search', None, "ALL")
-        if result == 'OK':
-            for num in data[0].split():
-                result, data = connection.uid('fetch', num, '(RFC822)')
-                if result == 'OK':
-                    email_message = email.message_from_bytes(data[0][1])
-                    print('From:' + email_message['From'])
-                    print('To:' + email_message['To'])
-                    print('Date:' + email_message['Date'])
-                    print('Subject:' + str(email_message['Subject']))
-                    print('Content:' + str(email_message.get_payload()[0]))
-        connection.close()
-        connection.logout()
-    except Exception as e:
-        print(e)
-        print("Error connecting firebase")
-
-
-
-
-
-
-
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -80,7 +50,11 @@ def register():
                             'email' : email,
                             'password' : password,
                 })
-                
+                ref.child('inbox').child(temp_user).set({
+                   
+                    
+                })
+
                 return jsonify({
                     'status' : True,
                     'message' : 'User created successfully',
@@ -91,6 +65,7 @@ def register():
                     'status': False, 
                     'message' : 'User already exists',
                     'code' : 'Error'
+                        
                 })
         except Exception as e:
             return jsonify({
@@ -190,7 +165,7 @@ def contactList():
                     'message': 'Created successful',
                     'code' : 'Success',
                     'data' : serverdata
-                })
+                }),serverdata
 
         except Exception as e:
             print(e)
@@ -200,39 +175,42 @@ def contactList():
                 'code' : 'Error'
             })
 
-@app.route('/sendMail', methods=['POST'])
-def sendMail():
-    if request.method == 'POST':
-        data = request.get_json()
-        user = data['user']
-        mail = data['mail']
-        try:
-            smtpdata = ref.child('users').child(user).child('smtpConfig').get()
-            print("smtpdata:",smtpdata)
-            import smtplib
-            import ssl
-            port = smtpdata['port']
-            smtp_server = smtpdata['host']
-            sender_email = "vyankatesht246@gmail.com"
-            receiver_email = "vtuppalwad@gmail.com"  # Enter receiver address
-            password=smtpdata['password']
-            message = mail['message']
-            context = ssl.create_default_context()
-            with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-                server.login(sender_email, password)
-                server.sendmail(sender_email, receiver_email, message)
-            return jsonify({
-                'status': True,
-                'message': 'Mail sent',
-                'code' : 'Success'
-            })
-        except Exception as e:
-            print(e)
-            return jsonify({
-                'status': False, 
-                'message': 'Error while sending mail : {}'.format(e),
-                'code' : 'Error'
-            })
+# @app.route('/sendMail', methods=['POST'])
+# def sendMail():
+#     if request.method == 'POST':
+#         data = request.get_json()
+#         user = data['user']
+#         mail = data['mail']
+#         try:
+#             smtpdata = ref.child('users').child(user).child('smtpConfig').get()
+#             print("smtpdata:",smtpdata)
+#             import smtplib
+#             import ssl
+#             port = smtpdata['port']
+#             smtp_server = smtpdata['host']
+#             sender_email = "vyankatesht246@gmail.com"
+#             receiver_email = "vtuppalwad@gmail.com"  # Enter receiver address
+#             password=smtpdata['password']
+#             message = mail['message']
+#             context = ssl.create_default_context()
+#             with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+#                 server.login(sender_email, password)
+#                 server.sendmail(sender_email, receiver_email, message)
+#             return jsonify({
+#                 'status': True,
+#                 'message': 'Mail sent',
+#                 'code' : 'Success'
+#             })
+#         except Exception as e:
+#             print(e)
+#             return jsonify({
+#                 'status': False, 
+#                 'message': 'Error while sending mail : {}'.format(e),
+#                 'code' : 'Error'
+#             })
+
+
+
 
 @app.route('/deleteContact', methods=['POST'])
 def deleteList():
@@ -260,21 +238,125 @@ def deleteList():
                 'code' : 'Error'
             })
 
-@app.route('/getMailss', methods=['POST'])
-def getMailss():
-    if request.method == 'POST':
+    
+    
+
+def send(user,sender,port,host,senderpassword,subject,body,singlemail,list_of_mail,type):
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['From'] =  "<{}>".format(sender)
+    smail=[]
+ 
+    if type=='Send Mail':
+        msg['To'] =''.join(singlemail)
+        smail=[singlemail]
+    elif type=='Send Mail as CC':
+        msg['To'] =','.join(list_of_mail)
+        smail=list_of_mail
+    elif type=='Send Mail as BCC':
+        msg['To'] =','.join(singlemail)
+        smail=list_of_mail
+    html="""\
+            """+body+"""
+            """
+       
+    try:
+        part2 = MIMEText(html, 'html')
+        msg.attach(part2)
+        mail = smtplib.SMTP(host, port)
+        mail.ehlo()
+        mail.starttls()
+       
+        mail.login(sender, senderpassword)
+        mail.sendmail(sender,smail , msg.as_string(),user)
+        mail.quit()
+        
+       
+        return jsonify({
+            'status': True,
+            'message': 'Mail sent',
+            'code' : 'Success'  
+            
+        })
+
+    except Exception as e:
+        return jsonify({
+            'status': False, 
+            'message': 'Error while sending mail... : {}'.format(e),
+            'code' : 'Error'
+        })    
+
+@app.route('/composemail', methods=['POST'])
+def sendmail():
+    if request.method == 'POST' :
         try:
             data = request.get_json()
-            user = data['user']
-            # print(data)
-            # serverdata = ref.child('users').child(user).get()
-            # password = serverdata['smtpConfig']['password']
-            imap_url = 'imap.gmail.com'
-            getMails("vyanketsht246@gmail.com", "rcpshspisoidrmvc","imap.gmail.com")
-            return "FUck you"
+            singlemail=data['to']
+            subject = data['subject']
+            body = data['message']
+            contact_list=data['list_of_mail']
+            smtp_data=data['smtpconfigdata']
+            user=data['user']
+            clist=data['clist']
+            body=BeautifulSoup(body, "html.parser")
+            body=body.get_text()    
+            
+
+            if ref.child('inbox').child(user).get() is None:
+                print("if")
+                ref.child('inbox').child(user).set({
+                    'count': 1
+                })
+                ref.child('inbox').child(user).child('1').set({
+                    'from': smtp_data['email'],
+                    'subject': subject,
+                    'message': body,
+                    
+                })
+            else:
+                print("else")
+                count = ref.child('inbox').child(user).child('count').get()
+                ref.child('inbox').child(user).update({
+                    'count': count+1
+                })
+
+                ref.child('inbox').child(user).child(str(count+1)).set({
+                    'from': smtp_data['email'],
+                    'subject': subject,
+                    'message': body,
+                
+                })
+
+            
+            if clist=='':
+                contact_list=[singlemail]
+            else:
+                contact_list=contact_list[clist]
+                contact_list=contact_list['contacts'][1:]
+            mtype=data['btn']
+      
+ 
+            send(user,smtp_data['email'],smtp_data['port'],smtp_data['host'],smtp_data['password'],subject,body,singlemail,contact_list,mtype)
+
+            data=ref.child('inbox').child(user).get()
+            print(data)
+            return jsonify({
+                    'status': True,
+                    'message': 'Mail sent',
+                    'code' : 'Success',
+                    'data' : data
+                    })
+          
         except Exception as e:
-            print(e)
-            return "FUck you ultra pro"
+            return jsonify({
+                'status': False,
+                'message': 'Error while sending mail : {}'.format(e),
+                'code' : 'Error'
+            })
+        
+print( ref.child('inbox').child('vtuppalwad').get())
 
 if __name__ == '__main__':
+    # print(inbox('hello','hello','vtuppalwad'))
     app.run(debug=True)
